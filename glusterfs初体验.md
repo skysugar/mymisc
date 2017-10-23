@@ -148,7 +148,7 @@ gluster volume replace-brick img 192.168.0.101:/data/gluster/img 192.168.0.107:/
 # 数据迁移完毕后提交
 gluster volume replace-brick img 192.168.0.101:/data/gluster/img 192.168.0.107:/data/gluster/img commit
 # 如果机器192.168.0.101出现故障已经不能运行,执行强制提交然后要求gluster马上执行一次同步
-gluster volume replace-brick img 192.168.0.101:/data/gluster/img 192.168.0.102:/data/gluster/img commit -force
+gluster volume replace-brick img 192.168.0.101:/data/gluster/img 192.168.0.102:/data/gluster/img commit force
 gluster volume heal img full
 ```
 
