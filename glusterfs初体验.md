@@ -108,14 +108,47 @@
    安装之后可以mount挂载, 随便挂载集群中的一个就可以.
 
    ```shell
-   [root@client ~]# mount.glusterfs 192.168.93.101:/def /mnt/
+   [root@client ~]# mount.glusterfs 192.168.0.2:/def /mnt/
    [root@client ~]# mount
    ...
    192.168.0.2:/def on /mnt type fuse.glusterfs (rw,relatime,user_id=0,group_id=0,default_permissions,allow_other,max_read=131072)
    fusectl on /sys/fs/fuse/connections type fusectl (rw,relatime)
-
    ```
 
    然后就可以向操作普通的文件夹一样操作了.
 
-   ​
+
+
+#### 常用命令
+
+```shell
+# 删除卷
+gluster volume stop img
+gluster volume delete img
+# 将机器移出集群
+gluster peer detach 192.168.0.3
+只允许192.168.0.0的网络访问glusterfs
+gluster volume set img auth.allow 192.168.0.*
+# 加入新的机器并添加到卷里(由于副本数设置为2,至少要添加2（4、6、8..）台机器)
+gluster peer probe 192.168.0.5
+gluster peer probe 192.168.0.6
+gluster volume add-brick img 192.168.0.5:/data/gluster 192.168.0.6:/data/gluster
+# 收缩卷
+gluster volume remove-brick img 192.168.0.2:/data/gluster/img start
+# 查看迁移状态
+gluster volume remove-brick img 192.168.0.2:/data/gluster/img status
+# 迁移完成后提交
+gluster volume remove-brick img 192.168.0.2:/data/gluster/img commit
+# 迁移卷
+# 将192.168.0.101的数据迁移到,先将192.168.0.107加入集群
+gluster peer probe 192.168.0.107
+gluster volume replace-brick img 192.168.0.101:/data/gluster/img 192.168.0.107:/data/gluster/img start
+# 查看迁移状态
+gluster volume replace-brick img 192.168.0.101:/data/gluster/img 192.168.0.107:/data/gluster/img status
+# 数据迁移完毕后提交
+gluster volume replace-brick img 192.168.0.101:/data/gluster/img 192.168.0.107:/data/gluster/img commit
+# 如果机器192.168.0.101出现故障已经不能运行,执行强制提交然后要求gluster马上执行一次同步
+gluster volume replace-brick img 192.168.0.101:/data/gluster/img 192.168.0.102:/data/gluster/img commit -force
+gluster volume heal img full
+```
+
