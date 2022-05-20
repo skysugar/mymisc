@@ -40,6 +40,8 @@ spec:
     - name: mysql
       targetPort: 3306
       port: 3306
+  externalIPs:
+  - '192.168.100.202'
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -63,7 +65,7 @@ spec:
         imagePullPolicy: IfNotPresent
         env:
         - name: MYSQL_ROOT_PASSWORD
-          value: 123
+          value: sqldb
         ports:
         - name: mysql
           containerPort: 3306
